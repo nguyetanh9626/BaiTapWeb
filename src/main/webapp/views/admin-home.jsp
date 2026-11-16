@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
@@ -34,6 +34,8 @@
             </div>
 
             <div class="btn-row">
+                <a href="${pageContext.request.contextPath}/video" class="btn btn-secondary">Kho Video</a>
+                <a href="${pageContext.request.contextPath}/video/my-videos" class="btn btn-secondary">Video của tôi</a>
                 <a href="${pageContext.request.contextPath}/admin/categories" class="btn btn-secondary">Quản lý danh mục (JPA)</a>
                 <a href="${pageContext.request.contextPath}/legacy/category/list" class="btn btn-secondary">Quản lý danh mục (JDBC)</a>
                 <a href="${pageContext.request.contextPath}/admin/users" class="btn btn-secondary">Xem chi tiết tài khoản</a>

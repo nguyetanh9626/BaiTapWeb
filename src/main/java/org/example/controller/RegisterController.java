@@ -12,9 +12,11 @@ import org.example.service.UserServiceImpl;
 import org.example.util.Constant;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 /**
- * Controller xử lý đăng ký tài khoản mới theo tài liệu 06_MVC_3tier.pdf.
+ * Controller xử lý đăng ký tài khoản mới kèm sinh mã OTP kích hoạt gửi qua Email.
  */
 @WebServlet(urlPatterns = "/register")
 public class RegisterController extends HttpServlet {
@@ -66,8 +68,8 @@ public class RegisterController extends HttpServlet {
             return;
         }
 
-        if (!phone.matches("^[0-9+\\-\\s]{8,15}$")) {
-            forwardWithError(req, resp, "Số điện thoại phải gồm 8–15 chữ số!");
+        if (password.length() < 6) {
+            forwardWithError(req, resp, "Mật khẩu phải chứa ít nhất 6 ký tự!");
             return;
         }
 
@@ -77,24 +79,12 @@ public class RegisterController extends HttpServlet {
         }
 
         try {
-            if (userService.checkExistEmail(email)) {
-                forwardWithError(req, resp, "Email đã tồn tại!");
-                return;
-            }
-            if (userService.checkExistUsername(username)) {
-                forwardWithError(req, resp, "Tài khoản đã tồn tại!");
-                return;
-            }
-            if (userService.checkExistPhone(phone)) {
-                forwardWithError(req, resp, "Số điện thoại đã tồn tại!");
-                return;
-            }
-
-            boolean isSuccess = userService.register(email, password, username, fullname, phone);
-            if (isSuccess) {
-                resp.sendRedirect(req.getContextPath() + "/login?registered=true");
+            String result = userService.registerWithOtp(email, password, username, fullname, phone);
+            if ("SUCCESS".equals(result)) {
+                String safeUsername = URLEncoder.encode(username, StandardCharsets.UTF_8);
+                resp.sendRedirect(req.getContextPath() + "/verify-otp?username=" + safeUsername + "&sent=true");
             } else {
-                forwardWithError(req, resp, "System error! Không thể đăng ký tài khoản.");
+                forwardWithError(req, resp, result);
             }
         } catch (DataAccessException e) {
             e.printStackTrace();

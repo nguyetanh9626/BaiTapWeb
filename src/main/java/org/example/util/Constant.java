@@ -33,6 +33,8 @@ public final class Constant {
      */
     public static final String DIR = resolveBaseUploadDir();
     public static final String CATEGORY_UPLOAD_SUBDIR = "category";
+    public static final String VIDEO_UPLOAD_SUBDIR = "videos";
+    public static final String THUMBNAIL_UPLOAD_SUBDIR = "thumbnails";
 
     private static String resolveBaseUploadDir() {
         String envDir = trimOrNull(System.getenv("BAITAPWEB_UPLOAD_DIR"));
@@ -61,6 +63,20 @@ public final class Constant {
         return Paths.get(DIR, CATEGORY_UPLOAD_SUBDIR);
     }
 
+    /**
+     * Đường dẫn thư mục lưu file Video upload.
+     */
+    public static java.nio.file.Path getVideoUploadDir() {
+        return Paths.get(DIR, VIDEO_UPLOAD_SUBDIR);
+    }
+
+    /**
+     * Đường dẫn thư mục lưu thumbnail Video upload.
+     */
+    public static java.nio.file.Path getThumbnailUploadDir() {
+        return Paths.get(DIR, THUMBNAIL_UPLOAD_SUBDIR);
+    }
+
     private static String trimOrNull(String value) {
         if (value == null) {
             return null;
@@ -76,10 +92,20 @@ public final class Constant {
         public static final String INDEX = "/views/index.jsp";
         public static final String LOGIN = "/views/login.jsp";
         public static final String REGISTER = "/views/register.jsp";
+        public static final String VERIFY_OTP = "/views/verify-otp.jsp";
+        public static final String FORGOT_PASSWORD = "/views/forgot-password.jsp";
+        public static final String VERIFY_RESET_OTP = "/views/verify-reset-otp.jsp";
+        public static final String RESET_PASSWORD = "/views/reset-password.jsp";
         public static final String ERROR = "/views/error.jsp";
         public static final String MY_ACCOUNT = "/views/myaccount.jsp";
         public static final String ADMIN_HOME = "/views/admin-home.jsp";
         public static final String MANAGER_HOME = "/views/manager-home.jsp";
+
+        public static final String VIDEO_LIST = "/views/video/video-list.jsp";
+        public static final String VIDEO_DETAIL = "/views/video/video-detail.jsp";
+        public static final String VIDEO_ADD = "/views/video/video-add.jsp";
+        public static final String VIDEO_EDIT = "/views/video/video-edit.jsp";
+        public static final String VIDEO_MY = "/views/video/my-videos.jsp";
 
         public static final String CATEGORY_LIST = "/views/admin/list-category.jsp";
         public static final String CATEGORY_ADD = "/views/admin/add-category.jsp";

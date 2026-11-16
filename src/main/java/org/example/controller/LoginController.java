@@ -7,16 +7,21 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.example.dao.DataAccessException;
+import org.example.model.User;
 import org.example.model.UserModel;
 import org.example.service.IUserService;
 import org.example.service.UserServiceImpl;
 import org.example.util.Constant;
 import org.example.util.CookieUtil;
+import org.example.util.PasswordUtil;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Controller xử lý đăng nhập với Session ("account") và Cookie Remember Me ("username").
+ * Hỗ trợ xác thực mật khẩu BCrypt, tương thích tài khoản cũ, và kiểm tra trạng thái kích hoạt tài khoản.
  */
 @WebServlet(urlPatterns = "/login")
 public class LoginController extends HttpServlet {
@@ -44,7 +49,13 @@ public class LoginController extends HttpServlet {
             req.setAttribute("fromCookie", Boolean.TRUE);
         }
 
-        if ("true".equals(req.getParameter("registered"))) {
+        if ("true".equals(req.getParameter("activated"))) {
+            req.setAttribute("successMsg", "Kích hoạt tài khoản thành công! Bạn có thể đăng nhập ngay bây giờ.");
+        } else if ("true".equals(req.getParameter("alreadyActive"))) {
+            req.setAttribute("successMsg", "Tài khoản đã được kích hoạt từ trước. Vui lòng đăng nhập.");
+        } else if ("true".equals(req.getParameter("resetSuccess"))) {
+            req.setAttribute("successMsg", "Đặt lại mật khẩu mới thành công! Vui lòng đăng nhập với mật khẩu mới.");
+        } else if ("true".equals(req.getParameter("registered"))) {
             req.setAttribute("successMsg", "Đăng ký tài khoản thành công! Vui lòng đăng nhập.");
         } else if ("true".equals(req.getParameter("authRequired"))) {
             req.setAttribute("alert", "Vui lòng đăng nhập để truy cập trang yêu cầu xác thực.");
@@ -78,6 +89,21 @@ public class LoginController extends HttpServlet {
 
         String trimmedUsername = username.trim();
         try {
+            // Kiểm tra trước xem tài khoản có tồn tại và chưa kích hoạt không
+            User existing = userService.findByUsernameOrEmail(trimmedUsername);
+            if (existing != null && PasswordUtil.checkPassword(password, existing.getPassWord())) {
+                if (!existing.isActive()) {
+                    String encUser = URLEncoder.encode(existing.getUserName(), StandardCharsets.UTF_8);
+                    req.setAttribute("notActive", Boolean.TRUE);
+                    req.setAttribute("inactiveUsername", existing.getUserName());
+                    req.setAttribute("alert", "Tài khoản của bạn chưa được kích hoạt qua mã OTP Email. Vui lòng kích hoạt tài khoản!");
+                    req.setAttribute("rememberedUsername", trimmedUsername);
+                    req.setAttribute("rememberChecked", isRememberMe);
+                    req.getRequestDispatcher(Constant.Path.LOGIN).forward(req, resp);
+                    return;
+                }
+            }
+
             UserModel user = userService.login(trimmedUsername, password);
             if (user != null) {
                 HttpSession session = req.getSession(true);

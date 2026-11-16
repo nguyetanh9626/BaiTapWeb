@@ -93,6 +93,25 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- BCrypt hỗ trợ băm mật khẩu an toàn -->
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
+
+        <!-- Jakarta Mail API & Eclipse Angus Mail Implementation để gửi OTP qua Email -->
+        <dependency>
+            <groupId>jakarta.mail</groupId>
+            <artifactId>jakarta.mail-api</artifactId>
+            <version>2.1.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.angus</groupId>
+            <artifactId>jakarta.mail</artifactId>
+            <version>2.0.3</version>
+        </dependency>
+
         <!-- JUnit 5 để chạy kiểm thử tự động Phần 10 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -112,6 +131,7 @@
                 <configuration>
                     <source>21</source>
                     <target>21</target>
+                    <encoding>UTF-8</encoding>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>

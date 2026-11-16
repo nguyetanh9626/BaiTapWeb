@@ -212,6 +212,8 @@ public class CategoryController extends HttpServlet {
                 Category category = cateService.findById(id);
                 if (category == null) {
                     req.getSession().setAttribute("message_error", "Danh mục ID #" + id + " không tồn tại hoặc đã được xóa!");
+                } else if (category.getVideos() != null && !category.getVideos().isEmpty()) {
+                    req.getSession().setAttribute("message_error", "Không thể xóa danh mục \"" + category.getCategoryname() + "\" (ID #" + id + ") vì đang có " + category.getVideos().size() + " video thuộc danh mục này. Vui lòng chuyển hoặc xóa các video liên quan trước!");
                 } else {
                     cateService.delete(id);
                     if (category.getImages() != null) {
@@ -221,7 +223,12 @@ public class CategoryController extends HttpServlet {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                req.getSession().setAttribute("message_error", "Không thể xóa danh mục ID " + id + ": " + e.getMessage());
+                String errorMsg = e.getMessage();
+                if (errorMsg != null && (errorMsg.contains("REFERENCE constraint") || errorMsg.contains("conflict") || errorMsg.contains("foreign key") || errorMsg.contains("FK"))) {
+                    req.getSession().setAttribute("message_error", "Không thể xóa danh mục ID #" + id + " do có ràng buộc dữ liệu: Đang có video thuộc danh mục này trong cơ sở dữ liệu!");
+                } else {
+                    req.getSession().setAttribute("message_error", "Không thể xóa danh mục ID #" + id + ": " + (errorMsg != null ? errorMsg : "Lỗi hệ thống."));
+                }
             }
             resp.sendRedirect(req.getContextPath() + "/admin/categories");
             return;

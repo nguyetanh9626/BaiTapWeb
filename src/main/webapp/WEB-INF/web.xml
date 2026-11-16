@@ -15,14 +15,32 @@
         <tracking-mode>COOKIE</tracking-mode>
     </session-config>
 
-    <!-- Hỗ trợ encoding UTF-8 -->
+    <!-- Bộ lọc toàn cục ép chuẩn UTF-8 cho tất cả Request và Response -->
+    <filter>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <filter-class>org.apache.catalina.filters.SetCharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>ignore</param-name>
+            <param-value>false</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- Hỗ trợ encoding UTF-8 đồng bộ toàn bộ JSP -->
     <jsp-config>
         <jsp-property-group>
             <url-pattern>*.jsp</url-pattern>
             <page-encoding>UTF-8</page-encoding>
             <trim-directive-whitespaces>true</trim-directive-whitespaces>
+            <default-content-type>text/html; charset=UTF-8</default-content-type>
         </jsp-property-group>
     </jsp-config>
 
 </web-app>
-

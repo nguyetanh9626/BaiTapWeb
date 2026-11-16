@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 
@@ -8,6 +8,9 @@
 <c:set var="isJpaAdd" value="${activeMenu == 'jpa-add' or fn:contains(uri, '/admin/category/add')}" />
 <c:set var="isJdbcList" value="${activeMenu == 'jdbc-list' or activeMenu == 'jdbc' or activeMenu == 'list' or fn:contains(uri, '/legacy/category/list') or fn:contains(uri, '/legacy/category/edit')}" />
 <c:set var="isJdbcAdd" value="${activeMenu == 'jdbc-add' or activeMenu == 'add' or fn:contains(uri, '/legacy/category/add')}" />
+<c:set var="isVideo" value="${activeMenu == 'video' or (fn:contains(uri, '/video') and not fn:contains(uri, '/video/add') and not fn:contains(uri, '/video/my-videos'))}" />
+<c:set var="isMyVideo" value="${activeMenu == 'my-videos' or fn:contains(uri, '/video/my-videos')}" />
+<c:set var="isVideoAdd" value="${activeMenu == 'video-add' or fn:contains(uri, '/video/add')}" />
 <c:set var="isUsers" value="${activeMenu == 'users' or fn:contains(uri, '/admin/users')}" />
 <c:set var="isMyAccount" value="${activeMenu == 'myaccount' or fn:contains(uri, '/member/myaccount')}" />
 
@@ -36,6 +39,13 @@
     <nav class="sidebar-nav">
         <a href="${pageContext.request.contextPath}/home"
            class="${isHome ? 'active' : ''}">Trang chủ</a>
+        <a href="${pageContext.request.contextPath}/video"
+           class="${isVideo ? 'active' : ''}">Kho Video</a>
+        <a href="${pageContext.request.contextPath}/video/my-videos"
+           class="${isMyVideo ? 'active' : ''}">Video của tôi</a>
+        <a href="${pageContext.request.contextPath}/video/add"
+           class="${isVideoAdd ? 'active' : ''}">+ Đăng Video</a>
+
         <c:choose>
             <c:when test="${sessionScope.account.roleid == 1 or sessionScope.account.roleid == 2}">
                 <a href="${pageContext.request.contextPath}/admin/categories"
@@ -63,44 +73,3 @@
         <a href="${pageContext.request.contextPath}/logout" class="nav-logout">Đăng xuất</a>
     </nav>
 </aside>
-
-<script>
-    (function () {
-        try {
-            var currentPath = window.location.pathname;
-            var navLinks = document.querySelectorAll('.sidebar-nav a:not(.nav-logout)');
-            var matchedLink = null;
-            
-            navLinks.forEach(function (link) {
-                var href = link.getAttribute('href');
-                if (!href) return;
-                var cleanHref = href.split('?')[0];
-                
-                if (currentPath === cleanHref) {
-                    matchedLink = link;
-                } else if (cleanHref.indexOf('/admin/categories') !== -1 && (currentPath.indexOf('/admin/categories') !== -1 || currentPath.indexOf('/admin/category/edit') !== -1)) {
-                    matchedLink = link;
-                } else if (cleanHref.indexOf('/legacy/category/list') !== -1 && (currentPath.indexOf('/legacy/category/list') !== -1 || currentPath.indexOf('/legacy/category/edit') !== -1)) {
-                    matchedLink = link;
-                } else if (cleanHref.indexOf('/admin/category/add') !== -1 && currentPath.indexOf('/admin/category/add') !== -1) {
-                    matchedLink = link;
-                } else if (cleanHref.indexOf('/legacy/category/add') !== -1 && currentPath.indexOf('/legacy/category/add') !== -1) {
-                    matchedLink = link;
-                } else if (cleanHref.indexOf('/admin/users') !== -1 && currentPath.indexOf('/admin/users') !== -1) {
-                    matchedLink = link;
-                } else if (cleanHref.indexOf('/member/myaccount') !== -1 && currentPath.indexOf('/member/myaccount') !== -1) {
-                    matchedLink = link;
-                } else if (cleanHref.endsWith('/home') && (currentPath.endsWith('/home') || currentPath.endsWith('/home/'))) {
-                    matchedLink = link;
-                }
-            });
-            
-            if (matchedLink) {
-                navLinks.forEach(function (l) { l.classList.remove('active'); });
-                matchedLink.classList.add('active');
-            }
-        } catch (e) {
-            // ignore
-        }
-    })();
-</script>

@@ -99,6 +99,20 @@ if errorlevel 1 (
     echo     -^> Chay thanh cong webst2.sql
 )
 
+echo     Dang chay update_baitapweb_v2.sql...
+if exist "%PROJECT_DIR%\database\update_baitapweb_v2.sql" (
+    sqlcmd %SQLCMD_AUTH% -f 65001 -i "%PROJECT_DIR%\database\update_baitapweb_v2.sql" >nul 2>nul
+    if errorlevel 1 (
+        echo [CANH BAO] Chay update_baitapweb_v2.sql chua thanh cong.
+    ) else (
+        echo     -^> Chay thanh cong update_baitapweb_v2.sql
+    )
+)
+
+if exist "%PROJECT_DIR%\database\fix_vietnamese_videos.sql" (
+    sqlcmd %SQLCMD_AUTH% -f 65001 -i "%PROJECT_DIR%\database\fix_vietnamese_videos.sql" >nul 2>nul
+)
+
 :: [Buoc 3] Build WAR bang Maven
 echo.
 echo [3/4] Build WAR va deploy len Tomcat...

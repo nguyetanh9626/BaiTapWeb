@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <c:set var="activeMenu" value="jdbc-list" scope="request"/>
 <c:set var="canManageCategory" value="${sessionScope.account.roleid == 1 or sessionScope.account.roleid == 2}"/>

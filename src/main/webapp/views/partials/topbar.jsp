@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <header class="topbar">
     <div class="brand">
@@ -7,7 +7,9 @@
     </div>
     <nav class="nav-links">
         <a href="${pageContext.request.contextPath}/home">Trang chủ</a>
+        <a href="${pageContext.request.contextPath}/video">Kho Video</a>
         <c:if test="${sessionScope.account != null}">
+            <a href="${pageContext.request.contextPath}/video/my-videos">Video của tôi</a>
             <a href="${pageContext.request.contextPath}/admin/categories">Danh mục (JPA)</a>
             <a href="${pageContext.request.contextPath}/legacy/category/list">Danh mục (JDBC)</a>
         </c:if>

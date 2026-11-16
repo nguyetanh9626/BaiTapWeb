@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="vi">
@@ -15,15 +15,18 @@
             <div class="auth-header">
                 <h2>Đăng Ký Tài Khoản</h2>
                 <p>Điền đầy đủ thông tin bên dưới để tạo tài khoản mới</p>
+                <div style="margin-top: 6px; font-size: 13px; color: #2563eb; background: #eff6ff; padding: 6px 12px; border-radius: 6px;">
+                    * Lưu ý: Hệ thống sẽ gửi mã xác thực OTP 6 số đến email để kích hoạt tài khoản.
+                </div>
             </div>
 
             <c:if test="${not empty alert}">
-                <div class="alert alert-danger">
+                <div class="alert alert-danger" style="margin-top: 14px;">
                     <c:out value="${alert}"/>
                 </div>
             </c:if>
 
-            <form action="${pageContext.request.contextPath}/register" method="post">
+            <form action="${pageContext.request.contextPath}/register" method="post" style="margin-top: 14px;">
                 <div class="form-group">
                     <label for="fullname">Họ và tên</label>
                     <input type="text"
@@ -57,7 +60,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="email">Email</label>
+                    <label for="email">Email nhận OTP</label>
                     <input type="email"
                            id="email"
                            name="email"
@@ -72,7 +75,8 @@
                         <input type="password"
                                id="password"
                                name="password"
-                               placeholder="Nhập mật khẩu..."
+                               placeholder="Tối thiểu 6 ký tự..."
+                               minlength="6"
                                required />
                     </div>
 
@@ -82,11 +86,12 @@
                                id="confirmPassword"
                                name="confirmPassword"
                                placeholder="Xác nhận mật khẩu..."
+                               minlength="6"
                                required />
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-block">Đăng ký</button>
+                <button type="submit" class="btn btn-primary btn-block">Đăng Ký & Nhận Mã OTP</button>
             </form>
 
             <div class="auth-footer">

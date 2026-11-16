@@ -86,7 +86,12 @@ public class CategoryDeleteController extends HttpServlet {
             }
         } catch (DataAccessException e) {
             e.printStackTrace();
-            SessionUtil.setFlashError(req, "Không thể xóa danh mục: " + e.getMessage());
+            String errorMsg = e.getMessage();
+            if (errorMsg != null && (errorMsg.contains("REFERENCE constraint") || errorMsg.contains("conflict") || errorMsg.contains("foreign key"))) {
+                SessionUtil.setFlashError(req, "Không thể xóa danh mục do có ràng buộc dữ liệu liên quan!");
+            } else {
+                SessionUtil.setFlashError(req, "Không thể xóa danh mục: " + (errorMsg != null ? errorMsg : "Lỗi hệ thống"));
+            }
         }
 
         resp.sendRedirect(req.getContextPath() + "/legacy/category/list");

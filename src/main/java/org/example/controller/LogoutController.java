@@ -24,6 +24,10 @@ public class LogoutController extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
         resp.setCharacterEncoding("UTF-8");
 
+        resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        resp.setHeader("Pragma", "no-cache");
+        resp.setDateHeader("Expires", 0);
+
         String path = req.getServletPath();
         if ("/forget-cookie".equals(path)) {
             CookieUtil.deleteCookie(req, resp, Constant.COOKIE_REMEMBER);

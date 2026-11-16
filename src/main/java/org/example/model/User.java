@@ -18,6 +18,11 @@ public class User implements Serializable {
     private int roleid;
     private String phone;
     private Date createdDate;
+    private boolean active = true;
+    private String otpHash;
+    private java.sql.Timestamp otpExpiry;
+    private int otpAttempts = 0;
+    private java.sql.Timestamp otpLastSentAt;
 
     public User() {
     }
@@ -124,6 +129,54 @@ public class User implements Serializable {
 
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public boolean getIsActive() {
+        return active;
+    }
+
+    public void setIsActive(boolean active) {
+        this.active = active;
+    }
+
+    public String getOtpHash() {
+        return otpHash;
+    }
+
+    public void setOtpHash(String otpHash) {
+        this.otpHash = otpHash;
+    }
+
+    public java.sql.Timestamp getOtpExpiry() {
+        return otpExpiry;
+    }
+
+    public void setOtpExpiry(java.sql.Timestamp otpExpiry) {
+        this.otpExpiry = otpExpiry;
+    }
+
+    public int getOtpAttempts() {
+        return otpAttempts;
+    }
+
+    public void setOtpAttempts(int otpAttempts) {
+        this.otpAttempts = otpAttempts;
+    }
+
+    public java.sql.Timestamp getOtpLastSentAt() {
+        return otpLastSentAt;
+    }
+
+    public void setOtpLastSentAt(java.sql.Timestamp otpLastSentAt) {
+        this.otpLastSentAt = otpLastSentAt;
     }
 
     // Các getter/setter alias giữ tương thích với các trang JSP và code slide cũ (UserModel)

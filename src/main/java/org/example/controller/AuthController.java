@@ -33,6 +33,15 @@ public class AuthController extends HttpServlet {
         } else if ("true".equals(req.getParameter("logout"))) {
             req.setAttribute("successMsg", "Bạn đã đăng xuất khỏi hệ thống.");
         }
+
+        // Lấy 10 video mới nhất để hiển thị trên trang chủ
+        try {
+            org.example.service.VideoService videoService = new org.example.service.VideoServiceImpl();
+            req.setAttribute("top10Videos", videoService.findTop10Newest());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         req.setAttribute("activeMenu", "home");
         req.getRequestDispatcher(Constant.Path.INDEX).forward(req, resp);
     }
