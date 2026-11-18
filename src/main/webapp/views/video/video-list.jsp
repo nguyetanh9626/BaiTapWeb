@@ -65,14 +65,15 @@
         .video-play-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.25);
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 0;
-            transition: opacity 0.2s;
+            opacity: 0.95;
+            transition: opacity 0.2s, background 0.2s;
         }
         .video-card:hover .video-play-overlay {
+            background: rgba(0,0,0,0.4);
             opacity: 1;
         }
         .play-btn-circle {
@@ -84,7 +85,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+            transition: transform 0.2s, background 0.2s;
+        }
+        .video-card:hover .play-btn-circle {
+            transform: scale(1.1);
+            background: #1d4ed8;
         }
         .video-content {
             padding: 16px;
@@ -224,7 +230,11 @@
                                          class="video-thumb-img"
                                          onerror="this.src='${pageContext.request.contextPath}/assets/images/categories/default-category.png';" />
                                     <div class="video-play-overlay">
-                                        <div class="play-btn-circle">&#9658;</div>
+                                        <div class="play-btn-circle">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="#ffffff" style="margin-left: 3px;">
+                                                <path d="M8 5v14l11-7z"/>
+                                            </svg>
+                                        </div>
                                     </div>
                                 </a>
                             </div>

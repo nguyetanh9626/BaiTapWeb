@@ -132,7 +132,10 @@
                     </div>
 
                     <div class="btn-row">
-                        <a href="${pageContext.request.contextPath}/video" class="btn btn-primary">&#9658; Kho Video Bài Giảng</a>
+                        <a href="${pageContext.request.contextPath}/video" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                            Kho Video Bài Giảng
+                        </a>
                         <a href="${pageContext.request.contextPath}/video/my-videos" class="btn btn-secondary">Video của tôi</a>
                         <c:choose>
                             <c:when test="${sessionScope.account.roleid == 1 or sessionScope.account.roleid == 2}">
@@ -163,7 +166,10 @@
                     <div class="btn-row">
                         <a href="${pageContext.request.contextPath}/login" class="btn btn-primary">Đăng nhập (Login)</a>
                         <a href="${pageContext.request.contextPath}/register" class="btn btn-secondary">Đăng ký (Register)</a>
-                        <a href="${pageContext.request.contextPath}/video" class="btn btn-secondary">&#9658; Xem Video Bài Giảng</a>
+                        <a href="${pageContext.request.contextPath}/video" class="btn btn-secondary" style="display: inline-flex; align-items: center; gap: 8px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                            Xem Video Bài Giảng
+                        </a>
                     </div>
                 </c:otherwise>
             </c:choose>
@@ -173,7 +179,10 @@
     <!-- Section 10 Video mới nhất theo yêu cầu giảng viên -->
     <section class="home-video-section">
         <div class="home-video-header">
-            <h2>&#127916; 10 Video Mới Nhất</h2>
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="#2563eb" style="vertical-align: middle;"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8 12.5v-9l6 4.5-6 4.5z"/></svg>
+                10 Video Mới Nhất
+            </h2>
             <a href="${pageContext.request.contextPath}/video" class="btn btn-secondary btn-sm" style="font-size: 13px;">
                 Xem tất cả kho video &rarr;
             </a>
@@ -193,8 +202,12 @@
                                          alt="<c:out value='${v.title}'/>"
                                          class="thumb-img"
                                          onerror="this.src='${pageContext.request.contextPath}/assets/images/categories/default-category.png';" />
-                                    <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2);">
-                                        <div style="width: 44px; height: 44px; border-radius: 50%; background: #2563eb; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">&#9658;</div>
+                                    <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.25);">
+                                        <div style="width: 48px; height: 48px; border-radius: 50%; background: #2563eb; color: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.35); transition: transform 0.2s;">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="#ffffff" style="margin-left: 3px;">
+                                                <path d="M8 5v14l11-7z"/>
+                                            </svg>
+                                        </div>
                                     </div>
                                 </a>
                             </div>
@@ -206,7 +219,10 @@
                                 </h3>
                                 <div class="meta">
                                     <span><c:out value="${not empty v.uploaderName ? v.uploaderName : 'Thành viên'}"/></span>
-                                    <span>&#128065; ${v.views}</span>
+                                    <span style="display: inline-flex; align-items: center; gap: 4px;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                                        ${v.views}
+                                    </span>
                                 </div>
                             </div>
                         </div>

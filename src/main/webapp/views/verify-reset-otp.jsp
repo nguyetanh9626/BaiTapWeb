@@ -52,8 +52,8 @@
                            maxlength="6"
                            required
                            autofocus />
-                    <small style="display:block; text-align:center; color:#64748b; margin-top: 6px;">
-                        Mã OTP có hiệu lực trong 5 phút. Vui lòng kiểm tra hộp thư email.
+                    <small style="display:block; text-align:center; color:#1d4ed8; font-weight:600; margin-top: 8px; background: #eff6ff; padding: 8px 12px; border-radius: 6px; border: 1px solid #bfdbfe;">
+                        Mã OTP đã được in tại cửa sổ Console của máy chủ Tomcat (Hiệu lực: 5 phút).
                     </small>
                 </div>
 

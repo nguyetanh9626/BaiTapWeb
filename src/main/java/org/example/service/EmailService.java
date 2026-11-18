@@ -43,14 +43,18 @@ public class EmailService {
      * @return true nếu gửi thành công hoặc đã log OTP hợp lệ
      */
     public boolean sendOtpEmail(String toEmail, String recipient, String otp, String purpose) {
-        // Luôn log mã OTP ra màn hình console để giảng viên và tester có thể kiểm thử ngay cả khi offline
+        // In mã OTP ra màn hình console Tomcat để nhận mã trực tiếp thuận tiện kiểm thử
+        System.out.println();
         System.out.println("================================================================");
-        System.out.println("[EMAIL SERVICE] GỬI MÃ OTP THÀNH CÔNG");
-        System.out.println("  Người nhận : " + recipient + " <" + toEmail + ">");
-        System.out.println("  Mục đích   : " + purpose);
-        System.out.println("  MÃ OTP     : " + otp);
-        System.out.println("  Thời hạn   : 5 phút");
+        System.out.println(">>> [TOMCAT CONSOLE] MÃ OTP XÁC THỰC BẢO MẬT <<<");
+        System.out.println(">>> Người nhận : " + (recipient != null ? recipient : "Người dùng") + " <" + toEmail + ">");
+        System.out.println(">>> Mục đích   : " + purpose);
+        System.out.println(">>> ========================================");
+        System.out.println(">>>  MÃ OTP CỦA BẠN LÀ: [ " + otp + " ]");
+        System.out.println(">>> ========================================");
+        System.out.println(">>> Thời hạn   : 5 phút (Nhập mã tại trang web để kích hoạt)");
         System.out.println("================================================================");
+        System.out.println();
 
         String host = getProperty("mail.smtp.host", "smtp.gmail.com");
         String port = getProperty("mail.smtp.port", "587");

@@ -148,22 +148,32 @@
                 <c:remove var="flash_success" scope="session"/>
             </c:if>
 
-            <div class="video-player-wrap">
+            <div class="video-player-wrap" style="position: relative;">
                 <video id="mainVideoPlayer" controls playsinline preload="auto"
                        poster="${pageContext.request.contextPath}/media/thumbnail?fname=${video.thumbnail}"
                        style="width: 100%; display: block; max-height: 520px; background: #000;">
                     <source src="${pageContext.request.contextPath}/media/video?fname=${video.videoPath}" type="video/mp4">
                     Trình duyệt của bạn không hỗ trợ thẻ phát video HTML5.
                 </video>
+                <div id="videoBigPlayBtn" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.25); cursor: pointer; transition: opacity 0.25s, visibility 0.25s;">
+                    <div style="width: 72px; height: 72px; border-radius: 50%; background: #2563eb; color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(0,0,0,0.5); transition: transform 0.2s, background 0.2s;">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="#ffffff" style="margin-left: 4px;">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    </div>
+                </div>
             </div>
 
             <div class="video-meta-box">
                 <h1><c:out value="${video.title}"/></h1>
 
                 <div class="video-stats-row">
-                    <div>
-                        <span>&#128065; <strong>${video.views}</strong> lượt xem</span>
-                        <span style="margin: 0 8px;">&bull;</span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="display: inline-flex; align-items: center; gap: 4px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                            <strong>${video.views}</strong> lượt xem
+                        </span>
+                        <span>&bull;</span>
                         <span>Ngày đăng: <strong><fmt:formatDate value="${video.uploadDate}" pattern="dd/MM/yyyy HH:mm"/></strong></span>
                     </div>
 
@@ -211,7 +221,10 @@
                          onerror="this.src='${pageContext.request.contextPath}/assets/images/categories/default-category.png';" />
                     <div class="sidebar-item-info">
                         <div class="sidebar-item-title"><c:out value="${rel.title}"/></div>
-                        <div class="sidebar-item-meta">&#128065; ${rel.views} lượt xem</div>
+                        <div class="sidebar-item-meta" style="display: flex; align-items: center; gap: 4px;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                            ${rel.views} lượt xem
+                        </div>
                     </div>
                 </a>
             </c:forEach>
@@ -221,5 +234,31 @@
         </div>
     </main>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const video = document.getElementById('mainVideoPlayer');
+            const bigBtn = document.getElementById('videoBigPlayBtn');
+            if (video && bigBtn) {
+                bigBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    if (video.paused) {
+                        video.play();
+                    }
+                });
+                video.addEventListener('play', function () {
+                    bigBtn.style.opacity = '0';
+                    bigBtn.style.visibility = 'hidden';
+                });
+                video.addEventListener('pause', function () {
+                    bigBtn.style.opacity = '1';
+                    bigBtn.style.visibility = 'visible';
+                });
+                video.addEventListener('ended', function () {
+                    bigBtn.style.opacity = '1';
+                    bigBtn.style.visibility = 'visible';
+                });
+            }
+        });
+    </script>
 </body>
 </html>
