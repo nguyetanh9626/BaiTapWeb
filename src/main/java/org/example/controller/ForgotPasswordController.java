@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import org.example.service.UserService;
 import org.example.service.UserServiceImpl;
 import org.example.util.Constant;
+import org.example.util.ValidationUtil;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -81,8 +82,9 @@ public class ForgotPasswordController extends HttpServlet {
     private void handleForgotPassword(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         String email = req.getParameter("email");
-        if (email == null || email.trim().isEmpty()) {
-            req.setAttribute("alert", "Vui lòng nhập địa chỉ email của bạn!");
+        if (email == null || email.trim().isEmpty() || !ValidationUtil.isValidEmail(email)) {
+            req.setAttribute("email", email != null ? email.trim() : "");
+            req.setAttribute("alert", "Vui lòng nhập địa chỉ email đúng định dạng!");
             req.getRequestDispatcher(Constant.Path.FORGOT_PASSWORD).forward(req, resp);
             return;
         }

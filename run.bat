@@ -117,6 +117,16 @@ if exist "%PROJECT_DIR%\database\update_baitapweb_v2.sql" (
     )
 )
 
+echo     Dang chay update_baitapweb_v3_profile.sql...
+if exist "%PROJECT_DIR%\database\update_baitapweb_v3_profile.sql" (
+    sqlcmd %SQLCMD_AUTH% -f 65001 -i "%PROJECT_DIR%\database\update_baitapweb_v3_profile.sql" >nul 2>nul
+    if errorlevel 1 (
+        echo [CANH BAO] Chay update_baitapweb_v3_profile.sql chua thanh cong.
+    ) else (
+        echo     -^> Chay thanh cong update_baitapweb_v3_profile.sql
+    )
+)
+
 if exist "%PROJECT_DIR%\database\fix_vietnamese_videos.sql" (
     sqlcmd %SQLCMD_AUTH% -f 65001 -i "%PROJECT_DIR%\database\fix_vietnamese_videos.sql" >nul 2>nul
 )
@@ -150,6 +160,7 @@ echo ============================================================
 echo   HOAN TAT! He thong da san sang:
 echo   - Trang chu       : http://localhost:8080/baitapweb/home
 echo   - Dang nhap       : http://localhost:8080/baitapweb/login
+echo   - Ho so ca nhan   : http://localhost:8080/baitapweb/profile
 echo   - Danh muc JPA    : http://localhost:8080/baitapweb/admin/categories
 echo   - Danh muc JDBC   : http://localhost:8080/baitapweb/legacy/category/list
 echo ============================================================

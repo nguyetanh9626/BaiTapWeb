@@ -10,6 +10,7 @@ import org.example.dao.DataAccessException;
 import org.example.service.UserService;
 import org.example.service.UserServiceImpl;
 import org.example.util.Constant;
+import org.example.util.ValidationUtil;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -63,7 +64,22 @@ public class RegisterController extends HttpServlet {
             return;
         }
 
-        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+        if (fullname.length() < 2 || fullname.length() > 100) {
+            forwardWithError(req, resp, "Họ và tên phải từ 2 đến 100 ký tự!");
+            return;
+        }
+
+        if (username.length() < 3 || username.length() > 50 || username.contains(" ")) {
+            forwardWithError(req, resp, "Tên đăng nhập phải từ 3 đến 50 ký tự và không chứa khoảng trắng!");
+            return;
+        }
+
+        if (!ValidationUtil.isValidPhone(phone)) {
+            forwardWithError(req, resp, "Số điện thoại không đúng định dạng (VD: 0901234567, 10 số bắt đầu bằng 0)!");
+            return;
+        }
+
+        if (!ValidationUtil.isValidEmail(email)) {
             forwardWithError(req, resp, "Email không đúng định dạng!");
             return;
         }

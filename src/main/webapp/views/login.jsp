@@ -7,6 +7,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Nhập - Trường Đại học Công nghệ Kỹ thuật</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <style>
+        .field-error-msg {
+            color: #dc2626;
+            font-size: 13px;
+            margin-top: 4px;
+            display: none;
+            text-align: left;
+        }
+        .input-error {
+            border-color: #dc2626 !important;
+            background-color: #fef2f2 !important;
+        }
+    </style>
 </head>
 <body class="auth-bg">
 
@@ -41,9 +54,9 @@
                 </div>
             </c:if>
 
-            <form action="${pageContext.request.contextPath}/login" method="post">
-                <div class="form-group">
-                    <label for="username">Tên đăng nhập hoặc Email</label>
+            <form id="loginForm" action="${pageContext.request.contextPath}/login" method="post" novalidate>
+                <div class="form-group" style="text-align: left;">
+                    <label for="username">Tên đăng nhập hoặc Email <span style="color:#dc2626;">*</span></label>
                     <input type="text"
                            id="username"
                            name="username"
@@ -51,23 +64,25 @@
                            placeholder="Nhập username hoặc email..."
                            required
                            autofocus />
+                    <div id="usernameError" class="field-error-msg">Vui lòng nhập tên đăng nhập hoặc địa chỉ email!</div>
                 </div>
 
-                <div class="form-group">
-                    <label for="password">Mật khẩu</label>
+                <div class="form-group" style="text-align: left;">
+                    <label for="password">Mật khẩu <span style="color:#dc2626;">*</span></label>
                     <input type="password"
                            id="password"
                            name="password"
                            placeholder="Nhập mật khẩu..."
                            required />
+                    <div id="passwordError" class="field-error-msg">Vui lòng nhập mật khẩu!</div>
                 </div>
 
                 <div class="form-options" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <label class="checkbox-label" style="margin-bottom: 0;">
                         <input type="checkbox"
-                               id="remember"
-                               name="remember"
-                               <c:if test="${rememberChecked}">checked</c:if> />
+                                id="remember"
+                                name="remember"
+                                <c:if test="${rememberChecked}">checked</c:if> />
                         <span>Remember Me</span>
                     </label>
                     <a href="${pageContext.request.contextPath}/forgot-password" style="font-size: 13px; color: #2563eb; text-decoration: none; font-weight: 500;">Quên mật khẩu?</a>
@@ -91,5 +106,51 @@
         </div>
     </div>
 
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("loginForm");
+        const uInput = document.getElementById("username");
+        const pInput = document.getElementById("password");
+        const uErr = document.getElementById("usernameError");
+        const pErr = document.getElementById("passwordError");
+
+        function validateUsername() {
+            const val = uInput.value.trim();
+            if (!val) {
+                uErr.textContent = "Tên đăng nhập hoặc địa chỉ email không được để trống!";
+                uErr.style.display = "block";
+                uInput.classList.add("input-error");
+                return false;
+            }
+            uErr.style.display = "none";
+            uInput.classList.remove("input-error");
+            return true;
+        }
+
+        function validatePassword() {
+            const val = pInput.value;
+            if (!val) {
+                pErr.textContent = "Mật khẩu không được để trống!";
+                pErr.style.display = "block";
+                pInput.classList.add("input-error");
+                return false;
+            }
+            pErr.style.display = "none";
+            pInput.classList.remove("input-error");
+            return true;
+        }
+
+        uInput.addEventListener("input", validateUsername);
+        pInput.addEventListener("input", validatePassword);
+
+        form.addEventListener("submit", function (e) {
+            const uOk = validateUsername();
+            const pOk = validatePassword();
+            if (!uOk || !pOk) {
+                e.preventDefault();
+            }
+        });
+    });
+    </script>
 </body>
 </html>

@@ -1,0 +1,30 @@
+<sitemesh>
+
+    <!-- 1. Loại trừ các đường dẫn tài nguyên tĩnh, media streaming và API -->
+    <mapping path="/api*" exclude="true" />
+    <mapping path="/assets/*" exclude="true" />
+    <mapping path="/media/*" exclude="true" />
+    <mapping path="/image/*" exclude="true" />
+    <mapping path="/uploads/*" exclude="true" />
+
+    <!-- 2. Giao diện xác thực tài khoản (Auth Layout riêng gọn gàng với Bootstrap 5, không lặp Navbar/Footer) -->
+    <mapping path="/login" name="login" decorator="login.jsp" />
+    <mapping path="/login/*" name="login" decorator="login.jsp" />
+    <mapping path="/register" name="login" decorator="login.jsp" />
+    <mapping path="/register/*" name="login" decorator="login.jsp" />
+    <mapping path="/verify-otp" name="login" decorator="login.jsp" />
+    <mapping path="/verify-otp/*" name="login" decorator="login.jsp" />
+    <mapping path="/verify-reset-otp" name="login" decorator="login.jsp" />
+    <mapping path="/verify-reset-otp/*" name="login" decorator="login.jsp" />
+    <mapping path="/forgot-password" name="login" decorator="login.jsp" />
+    <mapping path="/forgot-password/*" name="login" decorator="login.jsp" />
+    <mapping path="/reset-password" name="login" decorator="login.jsp" />
+    <mapping path="/reset-password/*" name="login" decorator="login.jsp" />
+
+    <!-- 3. Khu vực Quản trị hệ thống (Admin Layout) -->
+    <mapping path="/admin/*" name="admin" decorator="admin.jsp" />
+
+    <!-- 4. Áp dụng Decorator Web chính cho toàn bộ các trang JSP còn lại của hệ thống -->
+    <mapping path="/*" name="web" decorator="web.jsp" />
+
+</sitemesh>

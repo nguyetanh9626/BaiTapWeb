@@ -91,9 +91,5 @@
         </div>
     </main>
 
-    <footer class="site-footer">
-        &copy; 2026 - Khoa Công Nghệ Thông Tin - Trường Đại học Công nghệ Kỹ thuật
-    </footer>
-
 </body>
 </html>

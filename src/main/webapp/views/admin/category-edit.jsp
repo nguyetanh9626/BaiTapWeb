@@ -34,19 +34,21 @@
                 </c:if>
 
                 <!-- Form sửa danh mục đúng theo mã nguồn giảng viên cung cấp -->
-                <form action="<c:url value='/admin/category/update'/>" method="post" enctype="multipart/form-data">
+                <form id="cateEditForm" action="<c:url value='/admin/category/update'/>" method="post" enctype="multipart/form-data" novalidate>
                     <input type="hidden" name="categoryid" value="${cate.categoryid}">
 
                     <div style="margin-bottom: 18px;">
-                        <label for="categoryname" style="display: block; font-weight: 600; margin-bottom: 6px;">Category name:</label>
+                        <label for="categoryname" style="display: block; font-weight: 600; margin-bottom: 6px;">Category name <span style="color:#dc2626;">*</span>:</label>
                         <input type="text" id="categoryname" name="categoryname" value="<c:out value='${cate.categoryname}'/>" required
                                style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;">
+                        <div id="cateEditNameError" style="color: #dc2626; font-size: 13px; margin-top: 4px; display: none;">Tên danh mục không được để trống (từ 2 đến 100 ký tự)!</div>
                     </div>
 
                     <div style="margin-bottom: 18px;">
                         <label for="images" style="display: block; font-weight: 600; margin-bottom: 6px;">Link images (URL https/http):</label>
                         <input type="text" id="images" name="images" value="<c:out value='${cate.images}'/>"
                                style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;">
+                        <div id="cateEditUrlError" style="color: #dc2626; font-size: 13px; margin-top: 4px; display: none;">URL hình ảnh phải bắt đầu bằng http:// hoặc https://!</div>
                     </div>
 
                     <div style="margin-bottom: 18px;">
@@ -70,6 +72,7 @@
                         <label for="images1" style="display: block; font-weight: 600; margin-bottom: 6px;">Upload ảnh mới (nếu muốn thay đổi):</label>
                         <input type="file" id="images1" name="images1" accept="image/*"
                                style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;">
+                        <div id="cateEditFileError" style="color: #dc2626; font-size: 13px; margin-top: 4px; display: none;">Dung lượng file vượt quá 10MB!</div>
                     </div>
 
                     <div style="margin-bottom: 24px;">
@@ -93,6 +96,60 @@
                            style="padding: 11px 20px; font-size: 15px; border-radius: 8px; text-decoration: none; display: inline-block;">Hủy</a>
                     </div>
                 </form>
+
+                <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const form = document.getElementById("cateEditForm");
+                    const nameInput = document.getElementById("categoryname");
+                    const urlInput = document.getElementById("images");
+                    const fileInput = document.getElementById("images1");
+
+                    const nameErr = document.getElementById("cateEditNameError");
+                    const urlErr = document.getElementById("cateEditUrlError");
+                    const fileErr = document.getElementById("cateEditFileError");
+
+                    function checkName() {
+                        const val = nameInput.value.trim();
+                        if (val.length < 2 || val.length > 100) {
+                            nameErr.style.display = "block";
+                            return false;
+                        }
+                        nameErr.style.display = "none";
+                        return true;
+                    }
+
+                    function checkUrl() {
+                        const val = urlInput.value.trim();
+                        if (val && !val.startsWith("http://") && !val.startsWith("https://")) {
+                            urlErr.style.display = "block";
+                            return false;
+                        }
+                        urlErr.style.display = "none";
+                        return true;
+                    }
+
+                    function checkFile() {
+                        const file = fileInput.files[0];
+                        if (file && file.size > 10 * 1024 * 1024) {
+                            fileErr.style.display = "block";
+                            return false;
+                        }
+                        fileErr.style.display = "none";
+                        return true;
+                    }
+
+                    nameInput.addEventListener("input", checkName);
+                    urlInput.addEventListener("input", checkUrl);
+                    fileInput.addEventListener("change", checkFile);
+
+                    form.addEventListener("submit", function (e) {
+                        const ok = checkName() & checkUrl() & checkFile();
+                        if (!ok) {
+                            e.preventDefault();
+                        }
+                    });
+                });
+                </script>
             </div>
         </section>
     </main>

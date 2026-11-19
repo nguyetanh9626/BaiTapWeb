@@ -15,6 +15,7 @@ public class User implements Serializable {
     private String fullName;
     private String passWord;
     private String avatar;
+    private String avatarPublicId;
     private int roleid;
     private String phone;
     private Date createdDate;
@@ -105,6 +106,22 @@ public class User implements Serializable {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public String getAvatarPublicId() {
+        return avatarPublicId;
+    }
+
+    public void setAvatarPublicId(String avatarPublicId) {
+        this.avatarPublicId = avatarPublicId;
+    }
+
+    public String getAvatarUrl() {
+        return avatar;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatar = avatarUrl;
     }
 
     public int getRoleid() {

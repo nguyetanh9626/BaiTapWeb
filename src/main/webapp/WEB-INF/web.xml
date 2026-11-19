@@ -33,6 +33,26 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+    <!-- Bộ lọc SiteMesh 3 Decorator (Jakarta EE / Servlet 6.1 / Tomcat 11) -->
+    <filter>
+        <filter-name>sitemesh</filter-name>
+        <filter-class>org.sitemesh.config.ConfigurableSiteMeshFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>sitemesh</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- Bộ lọc tương thích Tomcat 11: chuyển forward() thành include() để bảo vệ bộ đệm SiteMesh 3 -->
+    <filter>
+        <filter-name>TomcatDispatchFilter</filter-name>
+        <filter-class>org.example.filter.TomcatDispatchFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>TomcatDispatchFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <!-- Hỗ trợ encoding UTF-8 đồng bộ toàn bộ JSP -->
     <jsp-config>
         <jsp-property-group>

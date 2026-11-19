@@ -19,6 +19,11 @@
 #   MAIL_SMTP_STARTTLS_ENABLE=true
 #   MAIL_SMTP_USERNAME=your_email@gmail.com
 #   MAIL_SMTP_PASSWORD=your_16_character_app_password
+#
+# Biến môi trường Cloudinary (Khuyến nghị cho bảo mật):
+#   CLOUDINARY_CLOUD_NAME=your_cloud_name
+#   CLOUDINARY_API_KEY=your_api_key
+#   CLOUDINARY_API_SECRET=your_api_secret
 # ============================================================
 
 # 1. Cấu hình Microsoft SQL Server (JDBC)
@@ -40,3 +45,9 @@ mail.smtp.auth=true
 mail.smtp.starttls.enable=true
 mail.smtp.username=your_email@gmail.com
 mail.smtp.password=your_16_character_app_password
+
+# 4. Cấu hình Cloudinary Upload ảnh đại diện Profile
+# (Có thể điền tại đây hoặc dùng biến môi trường CLOUDINARY_*)
+cloudinary.cloud_name=
+cloudinary.api_key=
+cloudinary.api_secret=

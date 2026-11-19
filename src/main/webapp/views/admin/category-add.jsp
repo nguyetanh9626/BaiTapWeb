@@ -34,12 +34,13 @@
                 </c:if>
 
                 <!-- Form thêm danh mục đúng theo mã nguồn giảng viên cung cấp -->
-                <form action="<c:url value='/admin/category/insert'/>" method="post" enctype="multipart/form-data">
+                <form id="cateAddForm" action="<c:url value='/admin/category/insert'/>" method="post" enctype="multipart/form-data" novalidate>
                     <div style="margin-bottom: 18px;">
-                        <label for="categoryname" style="display: block; font-weight: 600; margin-bottom: 6px;">Category name:</label>
+                        <label for="categoryname" style="display: block; font-weight: 600; margin-bottom: 6px;">Category name <span style="color:#dc2626;">*</span>:</label>
                         <input type="text" id="categoryname" name="categoryname" required
                                placeholder="Ví dụ: Điện thoại, Laptop, Áo sơ mi..."
                                style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;">
+                        <div id="cateNameError" style="color: #dc2626; font-size: 13px; margin-top: 4px; display: none;">Tên danh mục không được để trống (từ 2 đến 100 ký tự)!</div>
                     </div>
 
                     <div style="margin-bottom: 18px;">
@@ -47,12 +48,14 @@
                         <input type="text" id="images" name="images"
                                placeholder="https://example.com/image.png (tùy chọn)"
                                style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;">
+                        <div id="imagesUrlError" style="color: #dc2626; font-size: 13px; margin-top: 4px; display: none;">URL hình ảnh phải bắt đầu bằng http:// hoặc https://!</div>
                     </div>
 
                     <div style="margin-bottom: 18px;">
                         <label for="images1" style="display: block; font-weight: 600; margin-bottom: 6px;">Upload images (Chọn từ máy tính):</label>
                         <input type="file" id="images1" name="images1" accept="image/*"
                                style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;">
+                        <div id="fileUploadError" style="color: #dc2626; font-size: 13px; margin-top: 4px; display: none;">Dung lượng file vượt quá 10MB hoặc không phải định dạng ảnh hợp lệ!</div>
                     </div>
 
                     <div style="margin-bottom: 24px;">
@@ -76,6 +79,60 @@
                            style="padding: 11px 20px; font-size: 15px; border-radius: 8px; text-decoration: none; display: inline-block;">Hủy</a>
                     </div>
                 </form>
+
+                <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const form = document.getElementById("cateAddForm");
+                    const nameInput = document.getElementById("categoryname");
+                    const urlInput = document.getElementById("images");
+                    const fileInput = document.getElementById("images1");
+
+                    const nameErr = document.getElementById("cateNameError");
+                    const urlErr = document.getElementById("imagesUrlError");
+                    const fileErr = document.getElementById("fileUploadError");
+
+                    function checkName() {
+                        const val = nameInput.value.trim();
+                        if (val.length < 2 || val.length > 100) {
+                            nameErr.style.display = "block";
+                            return false;
+                        }
+                        nameErr.style.display = "none";
+                        return true;
+                    }
+
+                    function checkUrl() {
+                        const val = urlInput.value.trim();
+                        if (val && !val.startsWith("http://") && !val.startsWith("https://")) {
+                            urlErr.style.display = "block";
+                            return false;
+                        }
+                        urlErr.style.display = "none";
+                        return true;
+                    }
+
+                    function checkFile() {
+                        const file = fileInput.files[0];
+                        if (file && file.size > 10 * 1024 * 1024) {
+                            fileErr.style.display = "block";
+                            return false;
+                        }
+                        fileErr.style.display = "none";
+                        return true;
+                    }
+
+                    nameInput.addEventListener("input", checkName);
+                    urlInput.addEventListener("input", checkUrl);
+                    fileInput.addEventListener("change", checkFile);
+
+                    form.addEventListener("submit", function (e) {
+                        const ok = checkName() & checkUrl() & checkFile();
+                        if (!ok) {
+                            e.preventDefault();
+                        }
+                    });
+                });
+                </script>
             </div>
         </section>
     </main>

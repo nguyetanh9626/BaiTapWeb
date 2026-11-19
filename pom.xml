@@ -112,6 +112,20 @@
             <version>2.0.3</version>
         </dependency>
 
+        <!-- Layout Master (SiteMesh 3 theo tài liệu giảng viên) -->
+        <dependency>
+            <groupId>org.sitemesh</groupId>
+            <artifactId>sitemesh-webfilter</artifactId>
+            <version>3.3.0</version>
+        </dependency>
+
+        <!-- Cloudinary Java SDK HTTP5 cho upload ảnh đại diện User qua Multipart -->
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary-http5</artifactId>
+            <version>2.6.0</version>
+        </dependency>
+
         <!-- JUnit 5 để chạy kiểm thử tự động Phần 10 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

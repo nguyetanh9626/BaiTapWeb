@@ -326,6 +326,42 @@ public class UserServiceImpl implements IUserService {
         return userDao.search(keyword);
     }
 
+    @Override
+    public User findById(int id) {
+        return userDao.findById(id);
+    }
+
+    @Override
+    public String updateProfile(int userId, String fullname, String phone) {
+        if (isBlank(fullname)) {
+            return "Họ và tên không được để trống!";
+        }
+        String cleanName = fullname.trim();
+        if (cleanName.length() < 2 || cleanName.length() > 100) {
+            return "Họ và tên phải có độ dài từ 2 đến 100 ký tự!";
+        }
+
+        if (isBlank(phone)) {
+            return "Số điện thoại không được để trống!";
+        }
+        String cleanPhone = phone.trim();
+        if (!cleanPhone.matches("^(0[3|5|7|8|9])[0-9]{8}$") && !cleanPhone.matches("^0[0-9]{9,10}$")) {
+            return "Số điện thoại không đúng định dạng (VD: 0901234567, 10 chữ số bắt đầu bằng số 0)!";
+        }
+
+        if (userDao.checkExistPhoneExceptUser(cleanPhone, userId)) {
+            return "Số điện thoại này đã được tài khoản khác sử dụng. Vui lòng chọn số khác!";
+        }
+
+        userDao.updateProfileInfo(userId, cleanName, cleanPhone);
+        return "SUCCESS";
+    }
+
+    @Override
+    public void updateAvatar(int userId, String avatarUrl, String avatarPublicId) {
+        userDao.updateAvatar(userId, avatarUrl, avatarPublicId);
+    }
+
     private static boolean isBlank(String str) {
         return str == null || str.trim().isEmpty();
     }

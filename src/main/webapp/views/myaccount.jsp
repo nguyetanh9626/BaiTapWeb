@@ -36,15 +36,12 @@
             </div>
 
             <div class="btn-row">
+                <a href="${pageContext.request.contextPath}/profile" class="btn btn-primary">Chỉnh sửa hồ sơ (Profile)</a>
                 <a href="${pageContext.request.contextPath}/home" class="btn btn-secondary">Về Trang chủ</a>
                 <a href="${pageContext.request.contextPath}/logout" class="btn btn-danger">Đăng xuất</a>
             </div>
         </div>
     </main>
-
-    <footer class="site-footer">
-        &copy; 2026 - Khoa Công Nghệ Thông Tin - Trường Đại học Công nghệ Kỹ thuật
-    </footer>
 
 </body>
 </html>

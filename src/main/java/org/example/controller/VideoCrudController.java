@@ -153,6 +153,22 @@ public class VideoCrudController extends HttpServlet {
             return;
         }
 
+        if (title.trim().length() < 3 || title.trim().length() > 255) {
+            req.setAttribute("alert", "Tiêu đề video phải có độ dài từ 3 đến 255 ký tự!");
+            req.setAttribute("valTitle", title);
+            req.setAttribute("valDescription", description);
+            req.getRequestDispatcher(Constant.Path.VIDEO_ADD).forward(req, resp);
+            return;
+        }
+
+        if (description != null && description.trim().length() > 2000) {
+            req.setAttribute("alert", "Mô tả video không được vượt quá 2000 ký tự!");
+            req.setAttribute("valTitle", title);
+            req.setAttribute("valDescription", description);
+            req.getRequestDispatcher(Constant.Path.VIDEO_ADD).forward(req, resp);
+            return;
+        }
+
         Part videoPart = req.getPart("videoFile");
         Part thumbPart = req.getPart("thumbnailFile");
 
@@ -273,6 +289,20 @@ public class VideoCrudController extends HttpServlet {
 
         if (title == null || title.trim().isEmpty()) {
             req.setAttribute("alert", "Tiêu đề video không được để trống!");
+            req.setAttribute("video", video);
+            req.getRequestDispatcher(Constant.Path.VIDEO_EDIT).forward(req, resp);
+            return;
+        }
+
+        if (title.trim().length() < 3 || title.trim().length() > 255) {
+            req.setAttribute("alert", "Tiêu đề video phải có độ dài từ 3 đến 255 ký tự!");
+            req.setAttribute("video", video);
+            req.getRequestDispatcher(Constant.Path.VIDEO_EDIT).forward(req, resp);
+            return;
+        }
+
+        if (description != null && description.trim().length() > 2000) {
+            req.setAttribute("alert", "Mô tả video không được vượt quá 2000 ký tự!");
             req.setAttribute("video", video);
             req.getRequestDispatcher(Constant.Path.VIDEO_EDIT).forward(req, resp);
             return;

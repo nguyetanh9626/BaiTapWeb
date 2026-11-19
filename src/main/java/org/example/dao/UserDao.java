@@ -41,4 +41,16 @@ public interface UserDao {
     void activateUser(int userId);
 
     void delete(int userId);
+
+    User findById(int id);
+
+    void updateProfileInfo(int userId, String fullName, String phone);
+
+    void updateEmail(int userId, String newEmail);
+
+    void updateAvatar(int userId, String avatarUrl, String avatarPublicId);
+
+    boolean checkExistPhoneExceptUser(String phone, int userId);
+
+    boolean checkExistEmailExceptUser(String email, int userId);
 }

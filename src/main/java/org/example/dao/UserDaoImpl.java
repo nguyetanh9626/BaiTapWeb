@@ -22,8 +22,11 @@ import java.util.List;
 public class UserDaoImpl implements IUserDao {
 
     private static final String SELECT_COLUMNS =
-            "id, email, username, fullname, password, avatar, roleid, phone, createddate, "
+            "id, email, username, fullname, password, avatar, avatarPublicId, roleid, phone, createddate, "
             + "isActive, otpHash, otpExpiry, otpAttempts, otpLastSentAt ";
+
+    private static final String SQL_SELECT_BY_ID =
+            "SELECT " + SELECT_COLUMNS + "FROM [User] WHERE id = ?";
 
     private static final String SQL_SELECT_BY_USERNAME =
             "SELECT " + SELECT_COLUMNS + "FROM [User] WHERE username = ?";
@@ -42,11 +45,20 @@ public class UserDaoImpl implements IUserDao {
             + "ORDER BY roleid ASC, id ASC";
 
     private static final String SQL_INSERT_USER =
-            "INSERT INTO [User] (email, username, fullname, password, avatar, roleid, phone, createddate, isActive, otpHash, otpExpiry, otpAttempts, otpLastSentAt) "
-            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            "INSERT INTO [User] (email, username, fullname, password, avatar, avatarPublicId, roleid, phone, createddate, isActive, otpHash, otpExpiry, otpAttempts, otpLastSentAt) "
+            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     private static final String SQL_UPDATE_PASSWORD =
             "UPDATE [User] SET password = ? WHERE id = ?";
+
+    private static final String SQL_UPDATE_PROFILE_INFO =
+            "UPDATE [User] SET fullname = ?, phone = ? WHERE id = ?";
+
+    private static final String SQL_UPDATE_EMAIL =
+            "UPDATE [User] SET email = ? WHERE id = ?";
+
+    private static final String SQL_UPDATE_AVATAR =
+            "UPDATE [User] SET avatar = ?, avatarPublicId = ? WHERE id = ?";
 
     private static final String SQL_UPDATE_OTP =
             "UPDATE [User] SET otpHash = ?, otpExpiry = ?, otpAttempts = 0, otpLastSentAt = ? WHERE id = ?";
@@ -60,6 +72,8 @@ public class UserDaoImpl implements IUserDao {
     private static final String SQL_EXISTS_EMAIL = "SELECT 1 FROM [User] WHERE email = ?";
     private static final String SQL_EXISTS_USERNAME = "SELECT 1 FROM [User] WHERE username = ?";
     private static final String SQL_EXISTS_PHONE = "SELECT 1 FROM [User] WHERE phone = ?";
+    private static final String SQL_EXISTS_PHONE_EXCEPT = "SELECT 1 FROM [User] WHERE phone = ? AND id != ?";
+    private static final String SQL_EXISTS_EMAIL_EXCEPT = "SELECT 1 FROM [User] WHERE email = ? AND id != ?";
 
     private final DBConnection dbConnection = new DBConnection();
 
@@ -177,16 +191,17 @@ public class UserDaoImpl implements IUserDao {
             ps.setString(3, user.getFullName());
             ps.setString(4, user.getPassWord());
             ps.setString(5, user.getAvatar());
-            ps.setInt(6, user.getRoleid() > 0 ? user.getRoleid() : Constant.ROLE_USER);
-            ps.setString(7, user.getPhone());
-            ps.setDate(8, user.getCreatedDate() != null
+            ps.setString(6, user.getAvatarPublicId());
+            ps.setInt(7, user.getRoleid() > 0 ? user.getRoleid() : Constant.ROLE_USER);
+            ps.setString(8, user.getPhone());
+            ps.setDate(9, user.getCreatedDate() != null
                     ? user.getCreatedDate()
                     : new Date(System.currentTimeMillis()));
-            ps.setBoolean(9, user.isActive());
-            ps.setString(10, user.getOtpHash());
-            ps.setTimestamp(11, user.getOtpExpiry());
-            ps.setInt(12, user.getOtpAttempts());
-            ps.setTimestamp(13, user.getOtpLastSentAt());
+            ps.setBoolean(10, user.isActive());
+            ps.setString(11, user.getOtpHash());
+            ps.setTimestamp(12, user.getOtpExpiry());
+            ps.setInt(13, user.getOtpAttempts());
+            ps.setTimestamp(14, user.getOtpLastSentAt());
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new DataAccessException("Lỗi thêm tài khoản vào SQL Server: " + e.getMessage(), e);
@@ -306,6 +321,94 @@ public class UserDaoImpl implements IUserDao {
         }
     }
 
+    @Override
+    public User findById(int id) {
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(SQL_SELECT_BY_ID)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapRow(rs);
+                }
+            }
+            return null;
+        } catch (SQLException e) {
+            throw new DataAccessException("Lỗi truy vấn người dùng theo ID #" + id + ": " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void updateProfileInfo(int userId, String fullName, String phone) {
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(SQL_UPDATE_PROFILE_INFO)) {
+            ps.setString(1, fullName != null ? fullName.trim() : "");
+            ps.setString(2, phone != null ? phone.trim() : "");
+            ps.setInt(3, userId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Lỗi cập nhật thông tin cá nhân trong SQL Server: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void updateEmail(int userId, String newEmail) {
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(SQL_UPDATE_EMAIL)) {
+            ps.setString(1, newEmail != null ? newEmail.trim() : "");
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Lỗi cập nhật email người dùng trong SQL Server: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void updateAvatar(int userId, String avatarUrl, String avatarPublicId) {
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(SQL_UPDATE_AVATAR)) {
+            ps.setString(1, avatarUrl);
+            ps.setString(2, avatarPublicId);
+            ps.setInt(3, userId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Lỗi cập nhật ảnh đại diện người dùng trong SQL Server: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public boolean checkExistPhoneExceptUser(String phone, int userId) {
+        if (phone == null || phone.trim().isEmpty()) {
+            return false;
+        }
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(SQL_EXISTS_PHONE_EXCEPT)) {
+            ps.setString(1, phone.trim());
+            ps.setInt(2, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Lỗi kiểm tra trùng số điện thoại: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public boolean checkExistEmailExceptUser(String email, int userId) {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(SQL_EXISTS_EMAIL_EXCEPT)) {
+            ps.setString(1, email.trim());
+            ps.setInt(2, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Lỗi kiểm tra trùng email: " + e.getMessage(), e);
+        }
+    }
+
     private boolean existsByQuery(String sql, String value) {
         if (value == null || value.trim().isEmpty()) {
             return false;
@@ -329,6 +432,10 @@ public class UserDaoImpl implements IUserDao {
         user.setFullName(rs.getString("fullname"));
         user.setPassWord(rs.getString("password"));
         user.setAvatar(rs.getString("avatar"));
+        try {
+            user.setAvatarPublicId(rs.getString("avatarPublicId"));
+        } catch (SQLException ignored) {
+        }
         user.setRoleid(rs.getInt("roleid"));
         user.setPhone(rs.getString("phone"));
         user.setCreatedDate(rs.getDate("createddate"));

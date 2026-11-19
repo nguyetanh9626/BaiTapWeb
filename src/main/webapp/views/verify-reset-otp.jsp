@@ -16,6 +16,13 @@
             color: #1e3a8a;
             padding: 12px;
         }
+        .field-error-msg {
+            color: #dc2626;
+            font-size: 13px;
+            margin-top: 4px;
+            display: none;
+            text-align: center;
+        }
     </style>
 </head>
 <body class="auth-bg">
@@ -39,7 +46,7 @@
                 </div>
             </c:if>
 
-            <form action="${pageContext.request.contextPath}/verify-reset-otp" method="post">
+            <form id="verifyResetOtpForm" action="${pageContext.request.contextPath}/verify-reset-otp" method="post" novalidate>
                 <input type="hidden" name="email" value="<c:out value='${email}'/>" />
 
                 <div class="form-group">
@@ -50,8 +57,10 @@
                            class="otp-input-field"
                            placeholder="------"
                            maxlength="6"
+                           pattern="[0-9]{6}"
                            required
                            autofocus />
+                    <div id="otpError" class="field-error-msg">Vui lòng nhập đúng 6 chữ số mã OTP!</div>
                     <small style="display:block; text-align:center; color:#1d4ed8; font-weight:600; margin-top: 8px; background: #eff6ff; padding: 8px 12px; border-radius: 6px; border: 1px solid #bfdbfe;">
                         Mã OTP xác thực 6 số đã được gửi tới email của bạn (Hiệu lực: 5 phút).
                     </small>
@@ -66,5 +75,28 @@
         </div>
     </div>
 
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("verifyResetOtpForm");
+        const otpInput = document.getElementById("otp");
+        const otpError = document.getElementById("otpError");
+
+        form.addEventListener("submit", function (e) {
+            const val = otpInput.value.trim();
+            if (!/^[0-9]{6}$/.test(val)) {
+                otpError.style.display = "block";
+                e.preventDefault();
+            } else {
+                otpError.style.display = "none";
+            }
+        });
+
+        otpInput.addEventListener("input", function () {
+            if (/^[0-9]{6}$/.test(this.value.trim())) {
+                otpError.style.display = "none";
+            }
+        });
+    });
+    </script>
 </body>
 </html>

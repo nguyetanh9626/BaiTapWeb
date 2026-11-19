@@ -98,6 +98,7 @@ public final class Constant {
         public static final String RESET_PASSWORD = "/views/reset-password.jsp";
         public static final String ERROR = "/views/error.jsp";
         public static final String MY_ACCOUNT = "/views/myaccount.jsp";
+        public static final String PROFILE = "/views/profile.jsp";
         public static final String ADMIN_HOME = "/views/admin-home.jsp";
         public static final String MANAGER_HOME = "/views/manager-home.jsp";
 

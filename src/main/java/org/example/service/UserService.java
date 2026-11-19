@@ -43,4 +43,10 @@ public interface UserService {
     String verifyResetPasswordOtp(String email, String enteredOtp);
 
     String resetPassword(String email, String otp, String newPassword);
+
+    User findById(int id);
+
+    String updateProfile(int userId, String fullname, String phone);
+
+    void updateAvatar(int userId, String avatarUrl, String avatarPublicId);
 }
