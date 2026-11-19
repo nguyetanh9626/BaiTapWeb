@@ -17,6 +17,8 @@ public interface VideoDao {
 
     Video findById(int videoId);
 
+    Video findByVideoPath(String videoPath);
+
     List<Video> findTop10Newest();
 
     List<Video> findAll(int offset, int limit);

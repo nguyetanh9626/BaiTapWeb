@@ -61,7 +61,7 @@
                            autocomplete="one-time-code"
                            autofocus />
                     <small style="display:block; text-align:center; color:#1d4ed8; font-weight:600; margin-top: 8px; background: #eff6ff; padding: 8px 12px; border-radius: 6px; border: 1px solid #bfdbfe;">
-                        Mã OTP đã được in tại cửa sổ Console của máy chủ Tomcat (Hiệu lực: 5 phút).
+                        Mã OTP xác thực 6 số đã được gửi tới email của bạn (Hiệu lực: 5 phút).
                     </small>
                 </div>
 
@@ -71,7 +71,7 @@
             <div class="resend-box">
                 <span>Chưa nhận được mã OTP?</span><br/>
                 <a href="${pageContext.request.contextPath}/resend-otp?username=${username}" style="color: #2563eb; font-weight: 600; text-decoration: none;">
-                    &orarr; Tạo lại mã OTP mới tại Console
+                    &orarr; Gửi lại mã OTP qua Email
                 </a>
             </div>
 

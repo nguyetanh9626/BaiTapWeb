@@ -72,7 +72,15 @@ echo     -^> Cong 1433 dang hoat dong tot.
 echo.
 echo [2/4] Chay cac script khoi tao Database SQL Server...
 
-set "SQLCMD_AUTH=-S localhost -U sa -P 1234567@a$ -C"
+set "SQLCMD_AUTH="
+if not "%BAITAPWEB_DB_USER%"=="" (
+    if not "%BAITAPWEB_DB_PASSWORD%"=="" (
+        set "SQLCMD_AUTH=-S localhost -U %BAITAPWEB_DB_USER% -P %BAITAPWEB_DB_PASSWORD% -C"
+    )
+)
+if "%SQLCMD_AUTH%"=="" (
+    set "SQLCMD_AUTH=-S localhost -U sa -P 1234567@a$ -C"
+)
 sqlcmd %SQLCMD_AUTH% -Q "SELECT 1" >nul 2>nul
 if not errorlevel 1 goto :DO_BAITAPWEB
 

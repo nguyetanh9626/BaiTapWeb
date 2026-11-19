@@ -98,6 +98,7 @@
                                             <form action="${pageContext.request.contextPath}/video/delete" method="post" style="display: inline;"
                                                   onsubmit="return confirm('Bạn có chắc muốn xóa video này? Thao tác không thể hoàn tác.');">
                                                 <input type="hidden" name="csrfToken" value="<c:out value='${sessionScope.csrf_token}'/>"/>
+                                                <input type="hidden" name="csrf_token" value="<c:out value='${sessionScope.csrf_token}'/>"/>
                                                 <input type="hidden" name="id" value="${v.videoId}"/>
                                                 <button type="submit" class="btn btn-sm btn-danger" style="padding: 4px 8px; font-size: 12px;">Xóa</button>
                                             </form>

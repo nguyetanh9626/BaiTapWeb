@@ -38,6 +38,14 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
+    public Video findByVideoPath(String videoPath) {
+        if (videoPath == null || videoPath.trim().isEmpty()) {
+            return null;
+        }
+        return videoDao.findByVideoPath(videoPath.trim());
+    }
+
+    @Override
     public List<Video> findTop10Newest() {
         return videoDao.findTop10Newest();
     }

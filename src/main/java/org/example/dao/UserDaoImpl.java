@@ -137,6 +137,11 @@ public class UserDaoImpl implements IUserDao {
             return null;
         }
 
+        // Không cho phép đăng nhập nếu tài khoản chưa được kích hoạt qua OTP
+        if (!user.isActive()) {
+            return null;
+        }
+
         // Kiểm tra mật khẩu (hỗ trợ cả BCrypt và plaintext tài khoản cũ)
         if (PasswordUtil.checkPassword(password, user.getPassWord())) {
             // Tự động nâng cấp mật khẩu plaintext sang BCrypt hash trong database
@@ -233,6 +238,18 @@ public class UserDaoImpl implements IUserDao {
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new DataAccessException("Lỗi kích hoạt tài khoản: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void delete(int userId) {
+        String sql = "DELETE FROM [dbo].[User] WHERE id = ?";
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Lỗi xóa tài khoản người dùng: " + e.getMessage(), e);
         }
     }
 

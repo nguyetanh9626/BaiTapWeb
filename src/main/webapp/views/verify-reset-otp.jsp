@@ -53,7 +53,7 @@
                            required
                            autofocus />
                     <small style="display:block; text-align:center; color:#1d4ed8; font-weight:600; margin-top: 8px; background: #eff6ff; padding: 8px 12px; border-radius: 6px; border: 1px solid #bfdbfe;">
-                        Mã OTP đã được in tại cửa sổ Console của máy chủ Tomcat (Hiệu lực: 5 phút).
+                        Mã OTP xác thực 6 số đã được gửi tới email của bạn (Hiệu lực: 5 phút).
                     </small>
                 </div>
 

@@ -98,6 +98,26 @@ public class VideoDaoImpl implements VideoDao {
     }
 
     @Override
+    public Video findByVideoPath(String videoPath) {
+        if (videoPath == null || videoPath.trim().isEmpty()) {
+            return null;
+        }
+        String sql = SELECT_JOIN_USER + "WHERE v.videoPath = ?";
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, videoPath.trim());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapRow(rs);
+                }
+            }
+            return null;
+        } catch (SQLException e) {
+            throw new DataAccessException("Lỗi tìm kiếm video theo videoPath: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
     public List<Video> findTop10Newest() {
         String sql = "SELECT TOP 10 v.videoId, v.title, v.description, v.videoPath, v.thumbnail, v.uploadDate, v.views, v.status, v.userId, "
                 + "u.fullname AS uploaderName, u.username AS uploaderUsername "

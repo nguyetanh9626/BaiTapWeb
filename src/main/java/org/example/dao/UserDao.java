@@ -39,4 +39,6 @@ public interface UserDao {
     void incrementOtpAttempts(int userId);
 
     void activateUser(int userId);
+
+    void delete(int userId);
 }

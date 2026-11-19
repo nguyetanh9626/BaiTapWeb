@@ -5,13 +5,17 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import org.example.model.User;
 import org.example.model.Video;
 import org.example.service.VideoService;
 import org.example.service.VideoServiceImpl;
 import org.example.util.Constant;
+import org.example.util.SessionUtil;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Controller phát video HTML5 và xem chi tiết video (/video/detail, /video/watch).
@@ -48,6 +52,21 @@ public class VideoDetailController extends HttpServlet {
             return;
         }
 
+        // Kiểm tra quyền xem nếu video bị ẩn/tạm khóa (status != 1)
+        if (video.getStatus() != 1) {
+            HttpSession session = req.getSession(false);
+            User currentUser = session != null ? (User) session.getAttribute(Constant.SESSION_ACCOUNT) : null;
+            boolean canView = currentUser != null && (currentUser.getRoleid() == Constant.ROLE_ADMIN || currentUser.getId() == video.getUserId());
+            if (!canView) {
+                SessionUtil.setFlashError(req, "Video này đã bị ẩn hoặc tạm khóa. Bạn không có quyền xem.");
+                resp.sendRedirect(req.getContextPath() + "/video");
+                return;
+            }
+        }
+
+        // Chuẩn bị CSRF token cho form xóa video
+        SessionUtil.getOrCreateCsrfToken(req);
+
         // Tăng lượt xem an toàn
         videoService.incrementViews(videoId);
         video.setViews(video.getViews() + 1);
@@ -60,9 +79,21 @@ public class VideoDetailController extends HttpServlet {
         }
 
         req.setAttribute("video", video);
+        req.setAttribute("videoMime", resolveMimeType(video.getVideoPath()));
         req.setAttribute("relatedVideos", relatedVideos);
         req.setAttribute("activeMenu", "video");
 
         req.getRequestDispatcher(Constant.Path.VIDEO_DETAIL).forward(req, resp);
+    }
+
+    private String resolveMimeType(String filename) {
+        if (filename == null) return "video/mp4";
+        String lower = filename.toLowerCase(Locale.ROOT);
+        if (lower.endsWith(".mp4")) return "video/mp4";
+        if (lower.endsWith(".webm")) return "video/webm";
+        if (lower.endsWith(".mkv")) return "video/x-matroska";
+        if (lower.endsWith(".mov")) return "video/quicktime";
+        if (lower.endsWith(".avi")) return "video/x-msvideo";
+        return "video/mp4";
     }
 }

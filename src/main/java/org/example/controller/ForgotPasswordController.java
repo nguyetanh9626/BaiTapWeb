@@ -47,7 +47,7 @@ public class ForgotPasswordController extends HttpServlet {
             }
             req.setAttribute("email", email.trim());
             if ("true".equals(req.getParameter("sent"))) {
-                req.setAttribute("infoMsg", "Mã xác thực OTP đã được tạo thành công! Vui lòng kiểm tra cửa sổ Console Tomcat để nhận mã.");
+                req.setAttribute("infoMsg", "Mã xác thực OTP đã được gửi tới email của bạn. Vui lòng kiểm tra hộp thư (Hiệu lực: 5 phút).");
             }
             req.getRequestDispatcher(Constant.Path.VERIFY_RESET_OTP).forward(req, resp);
         } else if ("/reset-password".equals(servletPath)) {

@@ -38,6 +38,8 @@
             </c:if>
 
             <form action="${pageContext.request.contextPath}/video/add" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="<c:out value='${sessionScope.csrf_token}'/>"/>
+                <input type="hidden" name="csrfToken" value="<c:out value='${sessionScope.csrf_token}'/>"/>
                 <div class="form-group">
                     <label for="title">Tiêu đề video <span style="color: #dc2626;">*</span></label>
                     <input type="text"

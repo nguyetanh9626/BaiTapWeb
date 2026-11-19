@@ -5,8 +5,12 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceContext;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Lớp JPAConfig quản lý vòng đời EntityManagerFactory theo chuẩn singleton.
+ * Hỗ trợ nạp thông tin kết nối ghi đè từ biến môi trường (BAITAPWEB_DB_*).
  */
 @PersistenceContext
 public class JPAConfig {
@@ -16,11 +20,28 @@ public class JPAConfig {
 
     static {
         try {
-            factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+            factory = createFactory();
         } catch (Throwable ex) {
             System.err.println("Lỗi khởi tạo EntityManagerFactory: " + ex.getMessage());
             ex.printStackTrace();
         }
+    }
+
+    private static EntityManagerFactory createFactory() {
+        Map<String, Object> overrides = new HashMap<>();
+        String envUser = System.getenv("BAITAPWEB_DB_USER");
+        if (envUser != null && !envUser.trim().isEmpty()) {
+            overrides.put("jakarta.persistence.jdbc.user", envUser.trim());
+        }
+        String envPass = System.getenv("BAITAPWEB_DB_PASSWORD");
+        if (envPass != null) {
+            overrides.put("jakarta.persistence.jdbc.password", envPass.trim());
+        }
+        String envUrl = System.getenv("BAITAPWEB_DB_JPA_URL");
+        if (envUrl != null && !envUrl.trim().isEmpty()) {
+            overrides.put("jakarta.persistence.jdbc.url", envUrl.trim());
+        }
+        return Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, overrides);
     }
 
     /**
@@ -30,7 +51,7 @@ public class JPAConfig {
         if (factory == null || !factory.isOpen()) {
             synchronized (JPAConfig.class) {
                 if (factory == null || !factory.isOpen()) {
-                    factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+                    factory = createFactory();
                 }
             }
         }

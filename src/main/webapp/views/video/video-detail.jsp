@@ -152,7 +152,7 @@
                 <video id="mainVideoPlayer" controls playsinline preload="auto"
                        poster="${pageContext.request.contextPath}/media/thumbnail?fname=${video.thumbnail}"
                        style="width: 100%; display: block; max-height: 520px; background: #000;">
-                    <source src="${pageContext.request.contextPath}/media/video?fname=${video.videoPath}" type="video/mp4">
+                    <source src="${pageContext.request.contextPath}/media/video?fname=${video.videoPath}" type="${not empty videoMime ? videoMime : 'video/mp4'}">
                     Trình duyệt của bạn không hỗ trợ thẻ phát video HTML5.
                 </video>
                 <div id="videoBigPlayBtn" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.25); cursor: pointer; transition: opacity 0.25s, visibility 0.25s;">
@@ -185,6 +185,7 @@
                             <form action="${pageContext.request.contextPath}/video/delete" method="post" style="display: inline;"
                                   onsubmit="return confirm('Bạn có chắc chắn muốn xóa video này không?');">
                                 <input type="hidden" name="csrfToken" value="<c:out value='${sessionScope.csrf_token}'/>"/>
+                                <input type="hidden" name="csrf_token" value="<c:out value='${sessionScope.csrf_token}'/>"/>
                                 <input type="hidden" name="id" value="${video.videoId}"/>
                                 <button type="submit" class="btn btn-danger" style="padding: 6px 14px; font-size: 13px;">
                                     Xóa video

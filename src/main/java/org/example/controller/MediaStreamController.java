@@ -5,6 +5,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import org.example.model.User;
+import org.example.model.Video;
+import org.example.service.VideoService;
+import org.example.service.VideoServiceImpl;
 import org.example.util.Constant;
 
 import java.io.IOException;
@@ -22,6 +27,8 @@ import java.util.Locale;
 @WebServlet(urlPatterns = {"/media/video", "/media/thumbnail"})
 public class MediaStreamController extends HttpServlet {
     private static final long serialVersionUID = 1L;
+
+    private final VideoService videoService = new VideoServiceImpl();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -85,6 +92,21 @@ public class MediaStreamController extends HttpServlet {
     }
 
     private void serveVideo(HttpServletRequest req, HttpServletResponse resp, String filename) throws IOException {
+        // Kiểm tra quyền truy cập dựa trên bản ghi Video trong database (Phần 7)
+        try {
+            Video video = videoService.findByVideoPath(filename);
+            if (video != null && video.getStatus() != 1) {
+                HttpSession session = req.getSession(false);
+                User currentUser = session != null ? (User) session.getAttribute(Constant.SESSION_ACCOUNT) : null;
+                boolean canAccess = currentUser != null && (currentUser.getRoleid() == Constant.ROLE_ADMIN || currentUser.getId() == video.getUserId());
+                if (!canAccess) {
+                    resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Video này đã bị ẩn hoặc tạm khóa. Bạn không có quyền xem video này.");
+                    return;
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
         Path filePath = Constant.getVideoUploadDir().resolve(filename).normalize();
         if (!Files.isRegularFile(filePath) || !filePath.startsWith(Constant.getVideoUploadDir())) {
             // Kiểm tra trong thư mục assets của webapp

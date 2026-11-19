@@ -12,28 +12,37 @@ import java.io.IOException;
  */
 public final class SessionUtil {
 
-    private static final String FLASH_SUCCESS = "flashSuccess";
-    private static final String FLASH_ERROR = "flashError";
-    public static final String CSRF_TOKEN_SESSION = "csrfToken";
+    public static final String FLASH_SUCCESS = "flash_success";
+    public static final String FLASH_SUCCESS_ALT = "flashSuccess";
+    public static final String FLASH_ERROR = "flash_error";
+    public static final String FLASH_ERROR_ALT = "flashError";
+    public static final String CSRF_TOKEN_SESSION = "csrf_token";
+    public static final String CSRF_TOKEN_SESSION_ALT = "csrfToken";
 
     private SessionUtil() {
     }
 
     /**
      * Lấy hoặc tạo mới CSRF token lưu trong Session để chống tấn công Cross-Site Request Forgery.
+     * Đồng bộ cả 2 định dạng đặt tên: csrf_token và csrfToken để tương thích 100% với Controller và JSP.
      */
     public static String getOrCreateCsrfToken(HttpServletRequest req) {
         HttpSession session = req.getSession(true);
         String token = (String) session.getAttribute(CSRF_TOKEN_SESSION);
         if (token == null || token.trim().isEmpty()) {
-            token = java.util.UUID.randomUUID().toString();
-            session.setAttribute(CSRF_TOKEN_SESSION, token);
+            token = (String) session.getAttribute(CSRF_TOKEN_SESSION_ALT);
         }
+        if (token == null || token.trim().isEmpty()) {
+            token = java.util.UUID.randomUUID().toString();
+        }
+        session.setAttribute(CSRF_TOKEN_SESSION, token);
+        session.setAttribute(CSRF_TOKEN_SESSION_ALT, token);
         return token;
     }
 
     /**
      * Kiểm tra tính hợp lệ của CSRF token gửi lên từ request POST.
+     * Hỗ trợ nhận token từ cả parameter csrf_token và csrfToken.
      */
     public static boolean validateCsrfToken(HttpServletRequest req) {
         HttpSession session = req.getSession(false);
@@ -42,9 +51,15 @@ public final class SessionUtil {
         }
         String sessionToken = (String) session.getAttribute(CSRF_TOKEN_SESSION);
         if (sessionToken == null || sessionToken.trim().isEmpty()) {
+            sessionToken = (String) session.getAttribute(CSRF_TOKEN_SESSION_ALT);
+        }
+        if (sessionToken == null || sessionToken.trim().isEmpty()) {
             return false;
         }
-        String reqToken = req.getParameter("csrfToken");
+        String reqToken = req.getParameter("csrf_token");
+        if (reqToken == null || reqToken.trim().isEmpty()) {
+            reqToken = req.getParameter("csrfToken");
+        }
         return sessionToken.equals(reqToken);
     }
 
@@ -96,11 +111,13 @@ public final class SessionUtil {
     public static void setFlashSuccess(HttpServletRequest req, String message) {
         HttpSession session = req.getSession(true);
         session.setAttribute(FLASH_SUCCESS, message);
+        session.setAttribute(FLASH_SUCCESS_ALT, message);
     }
 
     public static void setFlashError(HttpServletRequest req, String message) {
         HttpSession session = req.getSession(true);
         session.setAttribute(FLASH_ERROR, message);
+        session.setAttribute(FLASH_ERROR_ALT, message);
     }
 
     /**
@@ -112,14 +129,23 @@ public final class SessionUtil {
             return;
         }
         Object success = session.getAttribute(FLASH_SUCCESS);
+        if (success == null) {
+            success = session.getAttribute(FLASH_SUCCESS_ALT);
+        }
         if (success != null) {
             req.setAttribute("successMsg", success.toString());
             session.removeAttribute(FLASH_SUCCESS);
+            session.removeAttribute(FLASH_SUCCESS_ALT);
         }
+
         Object error = session.getAttribute(FLASH_ERROR);
+        if (error == null) {
+            error = session.getAttribute(FLASH_ERROR_ALT);
+        }
         if (error != null) {
             req.setAttribute("alert", error.toString());
             session.removeAttribute(FLASH_ERROR);
+            session.removeAttribute(FLASH_ERROR_ALT);
         }
     }
 }

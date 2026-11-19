@@ -125,8 +125,18 @@ public class UserServiceImpl implements IUserService {
 
         userDao.insert(newUser);
 
-        // Gửi email OTP qua Jakarta Mail
-        emailService.sendOtpEmail(trimmedEmail, trimmedFullname, plainOtp, "Kích hoạt tài khoản");
+        // Gửi email OTP qua Jakarta Mail / SMTP
+        boolean sent = emailService.sendOtpEmail(trimmedEmail, trimmedFullname, plainOtp, "Kích hoạt tài khoản");
+        if (!sent) {
+            try {
+                User created = userDao.findByUsername(trimmedUsername);
+                if (created != null) {
+                    userDao.delete(created.getId());
+                }
+            } catch (Exception ignored) {
+            }
+            return "Không thể gửi email chứa mã xác thực OTP qua SMTP. Vui lòng kiểm tra lại cấu hình email hệ thống!";
+        }
 
         return "SUCCESS";
     }
@@ -196,7 +206,10 @@ public class UserServiceImpl implements IUserService {
         Timestamp lastSent = new Timestamp(now);
 
         userDao.updateOtp(user.getId(), otpHash, expiry, lastSent);
-        emailService.sendOtpEmail(user.getEmail(), user.getFullName(), plainOtp, "Kích hoạt tài khoản");
+        boolean sent = emailService.sendOtpEmail(user.getEmail(), user.getFullName(), plainOtp, "Kích hoạt tài khoản");
+        if (!sent) {
+            return "Không thể gửi lại mã OTP qua email do lỗi dịch vụ SMTP. Vui lòng kiểm tra lại cấu hình hoặc thử lại sau!";
+        }
 
         return "SUCCESS";
     }
@@ -226,7 +239,10 @@ public class UserServiceImpl implements IUserService {
         Timestamp lastSent = new Timestamp(now);
 
         userDao.updateOtp(user.getId(), otpHash, expiry, lastSent);
-        emailService.sendOtpEmail(user.getEmail(), user.getFullName(), plainOtp, "Đặt lại mật khẩu");
+        boolean sent = emailService.sendOtpEmail(user.getEmail(), user.getFullName(), plainOtp, "Đặt lại mật khẩu");
+        if (!sent) {
+            return "Không thể gửi email mã OTP đặt lại mật khẩu qua dịch vụ SMTP. Vui lòng kiểm tra lại cấu hình hoặc thử lại sau!";
+        }
 
         return "SUCCESS";
     }

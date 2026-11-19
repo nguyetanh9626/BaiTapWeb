@@ -4,7 +4,7 @@ GO
 -- 1. Bổ sung các cột phục vụ kích hoạt OTP và đăng ký an toàn cho bảng [User]
 IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[User]') AND name = 'isActive')
 BEGIN
-    ALTER TABLE [dbo].[User] ADD [isActive] BIT NOT NULL CONSTRAINT DF_User_isActive DEFAULT 1;
+    ALTER TABLE [dbo].[User] ADD [isActive] BIT NOT NULL CONSTRAINT DF_User_isActive DEFAULT 0;
 END
 GO
 
@@ -32,8 +32,11 @@ BEGIN
 END
 GO
 
--- Đảm bảo tất cả tài khoản cũ đều được kích hoạt sẵn
-UPDATE [dbo].[User] SET [isActive] = 1 WHERE [isActive] IS NULL OR [isActive] = 0;
+-- Chỉ kích hoạt sẵn các tài khoản mẫu ban đầu của hệ thống
+-- TUYỆT ĐỐI KHÔNG tự động kích hoạt tài khoản mới đăng ký chưa xác thực OTP
+UPDATE [dbo].[User] 
+SET [isActive] = 1 
+WHERE [username] IN ('admin', 'Nganh', 'student', '24110004');
 GO
 
 -- 2. Tạo bảng Videos có quan hệ 1-N với [User] trong database baitapweb

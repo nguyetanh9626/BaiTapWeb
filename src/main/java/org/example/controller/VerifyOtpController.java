@@ -50,10 +50,10 @@ public class VerifyOtpController extends HttpServlet {
 
         req.setAttribute("username", username.trim());
         if ("true".equals(req.getParameter("sent"))) {
-            req.setAttribute("infoMsg", "Mã xác thực OTP đã được tạo thành công! Vui lòng kiểm tra cửa sổ Console Tomcat để nhận mã OTP 6 số.");
+            req.setAttribute("infoMsg", "Mã xác thực OTP đã được gửi tới email đăng ký của bạn. Vui lòng kiểm tra hộp thư (Hiệu lực: 5 phút).");
         }
         if ("true".equals(req.getParameter("resent"))) {
-            req.setAttribute("infoMsg", "Đã gửi lại mã OTP mới! Vui lòng kiểm tra cửa sổ Console Tomcat để nhận mã.");
+            req.setAttribute("infoMsg", "Đã gửi lại mã OTP mới tới email của bạn. Vui lòng kiểm tra hộp thư (Hiệu lực: 5 phút).");
         }
         String resendError = req.getParameter("resendError");
         if (resendError != null && !resendError.isEmpty()) {

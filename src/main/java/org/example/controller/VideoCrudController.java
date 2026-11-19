@@ -63,6 +63,9 @@ public class VideoCrudController extends HttpServlet {
             return;
         }
 
+        // Đảm bảo CSRF token luôn sẵn sàng trong Session cho form
+        SessionUtil.getOrCreateCsrfToken(req);
+
         String path = req.getServletPath();
 
         if ("/video/my-videos".equals(path)) {
@@ -88,6 +91,9 @@ public class VideoCrudController extends HttpServlet {
         if (account == null) {
             return;
         }
+
+        // Đảm bảo CSRF token luôn sẵn sàng trong Session cho form
+        SessionUtil.getOrCreateCsrfToken(req);
 
         String path = req.getServletPath();
 
@@ -130,6 +136,14 @@ public class VideoCrudController extends HttpServlet {
             throws ServletException, IOException {
         String title = req.getParameter("title");
         String description = req.getParameter("description");
+
+        if (!SessionUtil.validateCsrfToken(req)) {
+            req.setAttribute("alert", "Mã xác thực bảo mật (CSRF Token) không hợp lệ hoặc phiên làm việc đã hết hạn!");
+            req.setAttribute("valTitle", title);
+            req.setAttribute("valDescription", description);
+            req.getRequestDispatcher(Constant.Path.VIDEO_ADD).forward(req, resp);
+            return;
+        }
 
         if (title == null || title.trim().isEmpty()) {
             req.setAttribute("alert", "Tiêu đề video không được để trống!");
@@ -176,7 +190,18 @@ public class VideoCrudController extends HttpServlet {
         newVideo.setStatus(1);
         newVideo.setUserId(account.getId()); // Gán trực tiếp từ session, chống giả mạo
 
-        videoService.insert(newVideo);
+        try {
+            videoService.insert(newVideo);
+        } catch (Exception ex) {
+            // Rollback dọn dẹp file vừa upload nếu lưu DB thất bại
+            VideoUploadUtil.deleteVideoFileIfExists(savedVideoName);
+            VideoUploadUtil.deleteThumbnailFileIfExists(savedThumbName);
+            req.setAttribute("alert", "Lỗi lưu dữ liệu video vào SQL Server: " + ex.getMessage());
+            req.setAttribute("valTitle", title);
+            req.setAttribute("valDescription", description);
+            req.getRequestDispatcher(Constant.Path.VIDEO_ADD).forward(req, resp);
+            return;
+        }
 
         SessionUtil.setFlashSuccess(req, "Tải lên video \"" + newVideo.getTitle() + "\" thành công!");
         resp.sendRedirect(req.getContextPath() + "/video/detail?id=" + newVideo.getVideoId());
@@ -235,6 +260,13 @@ public class VideoCrudController extends HttpServlet {
             return;
         }
 
+        if (!SessionUtil.validateCsrfToken(req)) {
+            req.setAttribute("alert", "Mã xác thực bảo mật (CSRF Token) không hợp lệ hoặc phiên làm việc đã hết hạn!");
+            req.setAttribute("video", video);
+            req.getRequestDispatcher(Constant.Path.VIDEO_EDIT).forward(req, resp);
+            return;
+        }
+
         String title = req.getParameter("title");
         String description = req.getParameter("description");
         String statusParam = req.getParameter("status");
@@ -260,26 +292,52 @@ public class VideoCrudController extends HttpServlet {
 
         String oldVideo = video.getVideoPath();
         String oldThumb = video.getThumbnail();
+        String newVideoPath = null;
+        String newThumbPath = null;
 
         try {
             if (videoPart != null && videoPart.getSize() > 0) {
-                String newVideoPath = VideoUploadUtil.saveVideo(videoPart);
+                newVideoPath = VideoUploadUtil.saveVideo(videoPart);
                 video.setVideoPath(newVideoPath);
-                VideoUploadUtil.deleteVideoFileIfExists(oldVideo);
             }
             if (thumbPart != null && thumbPart.getSize() > 0) {
-                String newThumbPath = VideoUploadUtil.saveThumbnail(thumbPart);
+                newThumbPath = VideoUploadUtil.saveThumbnail(thumbPart);
                 video.setThumbnail(newThumbPath);
-                VideoUploadUtil.deleteThumbnailFileIfExists(oldThumb);
             }
         } catch (IllegalArgumentException | SecurityException e) {
+            // Upload thất bại: dọn dẹp file mới tạo (nếu có), khôi phục model cũ và báo lỗi
+            VideoUploadUtil.deleteVideoFileIfExists(newVideoPath);
+            VideoUploadUtil.deleteThumbnailFileIfExists(newThumbPath);
+            video.setVideoPath(oldVideo);
+            video.setThumbnail(oldThumb);
             req.setAttribute("alert", e.getMessage());
             req.setAttribute("video", video);
             req.getRequestDispatcher(Constant.Path.VIDEO_EDIT).forward(req, resp);
             return;
         }
 
-        videoService.update(video);
+        try {
+            // Cập nhật database trước khi xóa file cũ (Quy trình an toàn chống mất file)
+            videoService.update(video);
+
+            // Cập nhật database thành công, bây giờ mới an tâm dọn file cũ
+            if (newVideoPath != null) {
+                VideoUploadUtil.deleteVideoFileIfExists(oldVideo);
+            }
+            if (newThumbPath != null) {
+                VideoUploadUtil.deleteThumbnailFileIfExists(oldThumb);
+            }
+        } catch (Exception ex) {
+            // Cập nhật database thất bại: dọn dẹp file mới và giữ nguyên file cũ
+            VideoUploadUtil.deleteVideoFileIfExists(newVideoPath);
+            VideoUploadUtil.deleteThumbnailFileIfExists(newThumbPath);
+            video.setVideoPath(oldVideo);
+            video.setThumbnail(oldThumb);
+            req.setAttribute("alert", "Cập nhật dữ liệu vào SQL Server thất bại: " + ex.getMessage());
+            req.setAttribute("video", video);
+            req.getRequestDispatcher(Constant.Path.VIDEO_EDIT).forward(req, resp);
+            return;
+        }
 
         SessionUtil.setFlashSuccess(req, "Cập nhật video thành công!");
         resp.sendRedirect(req.getContextPath() + "/video/detail?id=" + video.getVideoId());
